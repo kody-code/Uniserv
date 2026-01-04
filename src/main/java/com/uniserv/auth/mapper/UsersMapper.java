@@ -3,6 +3,8 @@ package com.uniserv.auth.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.uniserv.auth.entity.Users;
 
+import java.util.UUID;
+
 /**
  * <p>
  * 用户表 Mapper 接口
@@ -13,4 +15,5 @@ import com.uniserv.auth.entity.Users;
  */
 public interface UsersMapper extends BaseMapper<Users> {
 
+    int updateLastLogin(UUID userId);
 }

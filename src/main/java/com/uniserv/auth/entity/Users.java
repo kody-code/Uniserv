@@ -1,5 +1,6 @@
 package com.uniserv.auth.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -29,7 +30,9 @@ public class Users {
     /**
      * 用户 ID
      */
-    @TableId("id")
+    @TableId(
+            value = "id",
+            type = IdType.INPUT)
     private UUID id;
 
     /**

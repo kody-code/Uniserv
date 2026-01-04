@@ -1,7 +1,9 @@
 package com.uniserv.auth.service;
 
-import com.uniserv.auth.entity.Users;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.uniserv.auth.dto.request.LoginRequestDto;
+import com.uniserv.auth.dto.response.LoginResponseDto;
+import com.uniserv.auth.entity.Users;
 
 /**
  * <p>
@@ -13,4 +15,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUsersService extends IService<Users> {
 
+    /**
+     * 登录
+     *
+     * @param loginRequestDto 登录参数
+     * @return 登录结果
+     */
+    LoginResponseDto login(LoginRequestDto loginRequestDto);
 }
