@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: Uniserv
+  profiles:
+    active: dev
+
+sa-token:
+  token-name: uniserv-token
+  timeout: 2592000
+  is-concurrent: true
+  is-share: false
+  token-style: uuid
+  is-log: true
+  active-timeout: 604800

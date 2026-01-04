@@ -1,0 +1,51 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 仅匹配 v 开头的 Tag
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions: # 显式声明所有必要权限
+      contents: write # 创建 Release、上传资产、删除 Tag
+      id-token: write # 部分仓库需要此权限完成最终化
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 拉取完整历史，避免 Tag 问题
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build with Gradle
+        run: |
+          chmod +x ./mvnw
+          ./mvnw -DskipTests package
+        env:
+          CI: true
+
+      - name: Get Tag Name
+        id: get_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: true
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+          files: ./build/libs/*.jar
+          overwrite_files: true
+          fail_on_unmatched_files: true
