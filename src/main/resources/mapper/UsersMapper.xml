@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.uniserv.auth.mapper.UsersMapper">
+
+    <update id="updateLastLogin" parameterType="com.uniserv.common.handler.PostgresUUIDTypeHandler">
+        UPDATE users
+        SET last_login = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{userId}
+    </update>
+
+</mapper>
