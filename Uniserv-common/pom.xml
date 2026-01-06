@@ -9,25 +9,23 @@
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>Uniserv-app</artifactId>
+    <artifactId>Uniserv-common</artifactId>
+
+    <properties>
+        <hutool.version>5.8.40</hutool.version>
+        <commons-codec.version>1.20.0</commons-codec.version>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.uniserv</groupId>
-            <artifactId>Uniserv-common</artifactId>
-            <version>0.0.1</version>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>com.uniserv</groupId>
-            <artifactId>Uniserv-auth</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.uniserv</groupId>
-            <artifactId>Uniserv-cipher</artifactId>
-            <version>0.0.1</version>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
     </dependencies>
 
