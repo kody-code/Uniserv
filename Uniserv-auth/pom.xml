@@ -9,20 +9,12 @@
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>Uniserv-app</artifactId>
+    <artifactId>Uniserv-auth</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.uniserv</groupId>
-            <artifactId>Uniserv-common</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.uniserv</groupId>
-            <artifactId>Uniserv-auth</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-    </dependencies>
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>
