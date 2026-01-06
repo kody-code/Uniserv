@@ -13,6 +13,8 @@
     <modules>
         <module>Uniserv-app</module>
         <module>Uniserv-common</module>
+        <module>Uniserv-generator</module>
+        <module>Uniserv-auth</module>
     </modules>
 
     <parent>
