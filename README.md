@@ -16,7 +16,10 @@ Uniserv 是一个功能全面的个人服务后端系统，采用现代化的技
 ## 🧩 模块结构
 
 - **[Uniserv-app](Uniserv-app/README.md)** - 应用主模块
+- **[Uniserv-auth](Uniserv-auth/README.md)** - 认证与授权模块
 - **[Uniserv-common](Uniserv-common/README.md)** - 通用组件模块
+- **[Uniserv-cipher](Uniserv-cipher/README.md)** - 密码管理模块
+- **[Uniserv-generator](Uniserv-generator/README.md)** - 代码生成模块
 
 ## 📄 许可证
 
