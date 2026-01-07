@@ -3,8 +3,9 @@ package com.uniserv.auth.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.uniserv.auth.dot.request.LoginRequestDto;
-import com.uniserv.auth.dot.response.LoginResponseDto;
+import com.uniserv.auth.dto.request.LoginRequestDto;
+import com.uniserv.auth.dto.request.RegisterRequestDto;
+import com.uniserv.auth.dto.response.LoginResponseDto;
 import com.uniserv.auth.entity.Users;
 import com.uniserv.auth.mapper.UsersMapper;
 import com.uniserv.auth.service.IUsersService;
@@ -81,5 +82,56 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         } else {
             throw new BusinessException(ResultCode.AUTH_ERROR.getCode(), "请先登录");
         }
+    }
+
+    /**
+     * 判断是否是第一个用户
+     *
+     * @return 是否是第一个用户
+     */
+    @Override
+    public boolean isFirstUser() {
+        return baseMapper.getUserCount() == 0;
+    }
+
+    /**
+     * 注册
+     *
+     * @param registerRequestDto 注册参数
+     * @return 注册结果
+     */
+    @Override
+    public boolean register(RegisterRequestDto registerRequestDto) {
+        // 参数校验
+        if (registerRequestDto == null) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "参数不可为空");
+        }
+
+        // 查询用户信息
+        Users one = getOne(new LambdaQueryWrapper<Users>()
+                .eq(Users::getUsername, registerRequestDto.getUsername())
+        );
+        // 用户已存在
+        if (one != null) {
+            throw new BusinessException(ResultCode.BUSINESS_ERROR.getCode(), "用户已存在");
+        }
+
+        // 密码加密
+        String passwordHash = BCryptPasswordUtils.encrypt(registerRequestDto.getPassword());
+
+        // 创建用户
+        Users users = new Users();
+        users.setUsername(registerRequestDto.getUsername())
+                .setEmail(registerRequestDto.getEmail())
+                .setPasswordHash(passwordHash);
+        // 如果是第一个用户，则创建管理员
+        if (isFirstUser()) {
+            // 创建管理员
+            users.setRoles("ADMIN");
+        } else {
+            // 创建普通用户
+            users.setRoles("USER");
+        }
+        return baseMapper.saveUser(users);
     }
 }

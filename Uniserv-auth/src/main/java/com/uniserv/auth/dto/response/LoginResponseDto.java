@@ -1,4 +1,4 @@
-package com.uniserv.auth.dot.response;
+package com.uniserv.auth.dto.response;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;

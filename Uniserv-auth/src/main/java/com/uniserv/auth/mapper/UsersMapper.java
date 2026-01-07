@@ -32,4 +32,19 @@ public interface UsersMapper extends BaseMapper<Users> {
      */
 
     List<String> getRoles(UUID userId);
+
+    /**
+     * 获取用户数量
+     *
+     * @return 用户数量
+     */
+    int getUserCount();
+
+    /**
+     * 保存用户
+     *
+     * @param users 用户信息
+     * @return 保存结果
+     */
+    boolean saveUser(Users users);
 }
