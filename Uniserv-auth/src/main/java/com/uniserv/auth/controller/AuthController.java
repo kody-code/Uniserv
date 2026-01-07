@@ -1,8 +1,10 @@
 package com.uniserv.auth.controller;
 
-import com.uniserv.auth.dot.request.LoginRequestDto;
-import com.uniserv.auth.dot.response.LoginResponseDto;
+import com.uniserv.auth.dto.request.LoginRequestDto;
+import com.uniserv.auth.dto.request.RegisterRequestDto;
+import com.uniserv.auth.dto.response.LoginResponseDto;
 import com.uniserv.auth.service.IUsersService;
+import com.uniserv.common.enums.ResultCode;
 import com.uniserv.common.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,5 +45,20 @@ public class AuthController {
     @Operation(summary = "用户登录", description = "用户登录接口")
     public Result<LoginResponseDto> login(@Valid LoginRequestDto loginRequestDto) {
         return Result.success(UsersService.login(loginRequestDto));
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param registerRequestDto 注册参数
+     * @return 注册结果
+     */
+    @PostMapping("/register")
+    @Operation(summary = "用户注册", description = "用户注册接口")
+    public Result<String> register(@Valid RegisterRequestDto registerRequestDto) {
+        if (UsersService.register(registerRequestDto)) {
+            return Result.success("注册成功");
+        }
+        return Result.error(ResultCode.BUSINESS_ERROR.getCode(), "注册失败");
     }
 }

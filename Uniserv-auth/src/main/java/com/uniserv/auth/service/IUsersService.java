@@ -1,8 +1,9 @@
 package com.uniserv.auth.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.uniserv.auth.dot.request.LoginRequestDto;
-import com.uniserv.auth.dot.response.LoginResponseDto;
+import com.uniserv.auth.dto.request.LoginRequestDto;
+import com.uniserv.auth.dto.request.RegisterRequestDto;
+import com.uniserv.auth.dto.response.LoginResponseDto;
 import com.uniserv.auth.entity.Users;
 
 import java.util.List;
@@ -33,4 +34,18 @@ public interface IUsersService extends IService<Users> {
      */
     List<String> getRoleList(String userId);
 
+    /**
+     * 判断是否是第一个用户
+     *
+     * @return 是否是第一个用户
+     */
+    boolean isFirstUser();
+
+    /**
+     * 注册
+     *
+     * @param registerRequestDto 注册参数
+     * @return 注册结果
+     */
+    boolean register(RegisterRequestDto registerRequestDto);
 }

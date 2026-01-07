@@ -15,4 +15,13 @@
         WHERE id = #{userId}
     </select>
 
+    <select id="getUserCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM users
+    </select>
+
+    <insert id="saveUser" parameterType="com.uniserv.auth.entity.Users">
+        INSERT INTO users (username, email, password_hash, roles)
+        VALUES (#{username}, #{email}, #{passwordHash}, #{roles}::roles)
+    </insert>
 </mapper>
