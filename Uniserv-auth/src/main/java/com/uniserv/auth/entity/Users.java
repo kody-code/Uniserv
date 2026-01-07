@@ -1,5 +1,6 @@
 package com.uniserv.auth.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,6 +10,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * <p>
@@ -28,8 +30,8 @@ public class Users {
     /**
      * 用户ID
      */
-    @TableId("id")
-    private Object id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private UUID id;
 
     /**
      * 用户名
