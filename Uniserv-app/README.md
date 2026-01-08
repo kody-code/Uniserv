@@ -84,6 +84,9 @@ java -jar target/Uniserv-app-0.0.1.jar
 
 ## 🔧 依赖模块
 
+- [Uniserv-common](Uniserv-common/README.md) - 公共组件模块
+- [Uniserv-auth](Uniserv-auth/README.md) - 认证授权模块
+
 ## 📁 包扫描配置
 
 - Mapper 扫描: `com.uniserv.*.mapper`
