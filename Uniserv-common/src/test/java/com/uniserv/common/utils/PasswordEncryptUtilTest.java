@@ -45,15 +45,14 @@ class PasswordEncryptUtilTest {
     void testEncryptAndDecrypt() throws Exception {
         String plainPassword = "testPassword123";
         String masterPassword = "masterPassword123";
-        String salt = passwordEncryptUtil.generateSalt();
 
         // 测试加密
-        String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword, salt);
+        String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword);
         assertNotNull(encrypted);
         assertNotEquals(plainPassword, encrypted);
 
         // 测试解密
-        String decrypted = passwordEncryptUtil.decrypt(encrypted, masterPassword, salt);
+        String decrypted = passwordEncryptUtil.decrypt(encrypted, masterPassword);
         assertEquals(plainPassword, decrypted);
     }
 
@@ -63,25 +62,10 @@ class PasswordEncryptUtilTest {
         String plainPassword = "testPassword123";
         String masterPassword = "masterPassword123";
         String wrongMasterPassword = "wrongMasterPassword";
-        String salt = passwordEncryptUtil.generateSalt();
 
         assertThrows(Exception.class, () -> {
-            String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword, salt);
-            passwordEncryptUtil.decrypt(encrypted, wrongMasterPassword, salt);
-        });
-    }
-
-    @Test
-    @DisplayName("测试解密错误盐值")
-    void testDecryptWrongSalt() {
-        String plainPassword = "testPassword123";
-        String masterPassword = "masterPassword123";
-        String salt = passwordEncryptUtil.generateSalt();
-        String wrongSalt = passwordEncryptUtil.generateSalt();
-
-        assertThrows(Exception.class, () -> {
-            String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword, salt);
-            passwordEncryptUtil.decrypt(encrypted, masterPassword, wrongSalt);
+            String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword);
+            passwordEncryptUtil.decrypt(encrypted, wrongMasterPassword);
         });
     }
 
@@ -108,24 +92,21 @@ class PasswordEncryptUtilTest {
     @Test
     @DisplayName("测试空值处理")
     void testNullValues() {
-        String salt = passwordEncryptUtil.generateSalt();
         String verifySalt = passwordEncryptUtil.generateSalt();
 
         // 测试加密时的空值
         assertThrows(Exception.class, () ->
-                passwordEncryptUtil.encrypt(null, "master", salt));
+                passwordEncryptUtil.encrypt(null, "master"));
         assertThrows(Exception.class, () ->
-                passwordEncryptUtil.encrypt("plain", null, salt));
-        assertThrows(Exception.class, () ->
-                passwordEncryptUtil.encrypt("plain", "master", null));
+                passwordEncryptUtil.encrypt("plain", null));
 
         // 测试解密时的空值
         assertThrows(Exception.class, () ->
-                passwordEncryptUtil.decrypt(null, "master", salt));
+                passwordEncryptUtil.decrypt(null, "master"));
         assertThrows(Exception.class, () ->
-                passwordEncryptUtil.decrypt("encrypted", null, salt));
+                passwordEncryptUtil.decrypt("encrypted", null));
         assertThrows(Exception.class, () ->
-                passwordEncryptUtil.decrypt("encrypted", "master", null));
+                passwordEncryptUtil.decrypt("encrypted", "master"));
 
         // 测试验证哈希时的空值
         assertThrows(Exception.class, () ->
@@ -149,10 +130,9 @@ class PasswordEncryptUtilTest {
         ReflectionTestUtils.setField(passwordEncryptUtil, "keyLength", 128);
         String plainPassword = "testPassword123";
         String masterPassword = "masterPassword123";
-        String salt = passwordEncryptUtil.generateSalt();
 
-        String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword, salt);
-        String decrypted = passwordEncryptUtil.decrypt(encrypted, masterPassword, salt);
+        String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword);
+        String decrypted = passwordEncryptUtil.decrypt(encrypted, masterPassword);
         assertEquals(plainPassword, decrypted);
     }
 
@@ -161,10 +141,9 @@ class PasswordEncryptUtilTest {
     void testDataIntegrity() throws Exception {
         String plainPassword = "testPassword123";
         String masterPassword = "masterPassword123";
-        String salt = passwordEncryptUtil.generateSalt();
 
-        String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword, salt);
-        String decrypted = passwordEncryptUtil.decrypt(encrypted, masterPassword, salt);
+        String encrypted = passwordEncryptUtil.encrypt(plainPassword, masterPassword);
+        String decrypted = passwordEncryptUtil.decrypt(encrypted, masterPassword);
 
         assertEquals(plainPassword, decrypted);
         assertNotEquals(plainPassword, encrypted); // 确保加密后与原文不同

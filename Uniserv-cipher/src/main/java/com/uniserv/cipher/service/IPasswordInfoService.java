@@ -39,6 +39,7 @@ public interface IPasswordInfoService extends IService<PasswordInfo> {
      */
     boolean checkMasterPassword(PasswordInfoRequestDto requestDto) throws Exception;
 
+
     /**
      * 更新密码信息
      *
