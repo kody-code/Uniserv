@@ -26,19 +26,20 @@ import java.util.Base64;
  */
 @Component
 public class PasswordEncryptUtil {
+    // IV向量固定长度（AES/CBC要求16字节）
+    private static final int IV_LENGTH = 16;
     @Value("${encrypt.pbkdf2.iterations:65536}")
     private int iterations;
-
     @Value("${encrypt.pbkdf2.key-length:256}")
     private int keyLength;
-
+    // 密码专属盐值长度（原盐值长度作为基础配置）
     @Value("${encrypt.pbkdf2.salt-length:16}")
     private int saltLength;
 
     /**
-     * 生成盐值
+     * 生成盐值（通用）
      *
-     * @return 盐值
+     * @return 盐值（16进制字符串）
      */
     public String generateSalt() {
         SecureRandom random = new SecureRandom();
@@ -48,10 +49,10 @@ public class PasswordEncryptUtil {
     }
 
     /**
-     * 获取 AES 密钥
+     * 获取 AES 密钥（基于主密码+密码专属盐值）
      *
      * @param masterPassword 主密码
-     * @param salt           盐值
+     * @param salt           密码专属盐值（16进制字符串）
      * @return 密钥
      * @throws Exception 密钥生成异常
      */
@@ -63,61 +64,79 @@ public class PasswordEncryptUtil {
     }
 
     /**
-     * 加密密码
+     * 加密密码（自动生成每条密码的专属盐值，无需外部传入）
      *
      * @param plainPassword  明文密码
      * @param masterPassword 主密码
-     * @param salt           盐值
-     * @return 密文密码
+     * @return 密文（格式：Base64(密码专属盐值 + IV向量 + 加密内容)）
      * @throws Exception 加密异常
      */
-    public String encrypt(String plainPassword, String masterPassword, String salt) throws Exception {
-        SecretKey aesKey = getAesKey(masterPassword, salt);
+    public String encrypt(String plainPassword, String masterPassword) throws Exception {
+        // 1. 为当前密码生成专属盐值（每条密码独立）
+        String passwordSalt = generateSalt();
+        SecretKey aesKey = getAesKey(masterPassword, passwordSalt);
+
+        // 2. 生成随机IV向量
         SecureRandom random = new SecureRandom();
-        byte[] iv = new byte[16];
+        byte[] iv = new byte[IV_LENGTH];
         random.nextBytes(iv);
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
+        // 3. AES/CBC加密
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey, ivSpec);
         byte[] encrypted = cipher.doFinal(plainPassword.getBytes(StandardCharsets.UTF_8));
 
-        byte[] combined = new byte[iv.length + encrypted.length];
-        System.arraycopy(iv, 0, combined, 0, iv.length);
-        System.arraycopy(encrypted, 0, combined, iv.length, encrypted.length);
+        // 4. 拼接：密码专属盐值（字节） + IV向量 + 加密内容
+        byte[] saltBytes = Hex.decodeHex(passwordSalt);
+        byte[] combined = new byte[saltBytes.length + iv.length + encrypted.length];
+        System.arraycopy(saltBytes, 0, combined, 0, saltBytes.length);
+        System.arraycopy(iv, 0, combined, saltBytes.length, iv.length);
+        System.arraycopy(encrypted, 0, combined, saltBytes.length + iv.length, encrypted.length);
+
+        // 5. Base64编码返回
         return Base64.getEncoder().encodeToString(combined);
     }
 
     /**
-     * 解密密码
+     * 解密密码（自动从密文中提取密码专属盐值，无需外部传入）
      *
-     * @param encryptedPassword 密文密码
+     * @param encryptedPassword 密文（格式：Base64(密码专属盐值 + IV向量 + 加密内容)）
      * @param masterPassword    主密码
-     * @param salt              盐值
      * @return 明文密码
      * @throws Exception 解密异常
      */
-    public String decrypt(String encryptedPassword, String masterPassword, String salt) throws Exception {
-        SecretKey aesKey = getAesKey(masterPassword, salt);
+    public String decrypt(String encryptedPassword, String masterPassword) throws Exception {
+        // 1. 解码Base64
         byte[] combined = Base64.getDecoder().decode(encryptedPassword);
 
-        byte[] iv = new byte[16];
-        byte[] encrypted = new byte[combined.length - iv.length];
-        System.arraycopy(combined, 0, iv, 0, iv.length);
-        System.arraycopy(combined, iv.length, encrypted, 0, encrypted.length);
+        // 2. 拆分：密码专属盐值（前saltLength字节） + IV向量（接下来16字节） + 加密内容（剩余）
+        byte[] saltBytes = new byte[saltLength];
+        byte[] iv = new byte[IV_LENGTH];
+        byte[] encrypted = new byte[combined.length - saltLength - IV_LENGTH];
 
+        System.arraycopy(combined, 0, saltBytes, 0, saltLength);
+        System.arraycopy(combined, saltLength, iv, 0, IV_LENGTH);
+        System.arraycopy(combined, saltLength + IV_LENGTH, encrypted, 0, encrypted.length);
+
+        // 3. 还原密码专属盐值（16进制字符串）
+        String passwordSalt = Hex.encodeHexString(saltBytes);
+        SecretKey aesKey = getAesKey(masterPassword, passwordSalt);
+
+        // 4. AES/CBC解密
         IvParameterSpec ivSpec = new IvParameterSpec(iv);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, aesKey, ivSpec);
         byte[] decrypted = cipher.doFinal(encrypted);
+
         return new String(decrypted, StandardCharsets.UTF_8);
     }
 
     /**
-     * 生成验证哈希
+     * 生成验证哈希（主密码验证用）
      *
      * @param masterPassword 主密码
-     * @param verifySalt     验证盐值
+     * @param verifySalt     验证盐值（独立于密码盐值）
      * @return 验证哈希
      * @throws Exception 验证哈希生成异常
      */
@@ -141,6 +160,6 @@ public class PasswordEncryptUtil {
     public boolean verifyMasterPassword(String inputMasterPwd, String storedVerifyHash, String verifySalt) throws Exception {
         String inputHash = generateVerifyHash(inputMasterPwd, verifySalt);
         // 常量时间比较，防止计时攻击
-        return MessageDigest.isEqual(inputHash.getBytes(), storedVerifyHash.getBytes());
+        return MessageDigest.isEqual(inputHash.getBytes(StandardCharsets.UTF_8), storedVerifyHash.getBytes(StandardCharsets.UTF_8));
     }
 }
