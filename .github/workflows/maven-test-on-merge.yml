@@ -1,50 +1,55 @@
-# 工作流名称，在 GitHub Actions 页面显示
 name: Run Maven Test on Merge
 
-# 触发条件：指定分支被合并时触发（核心配置）
 on:
-  # 当有 PR（拉取请求）被合并到以下分支时，触发工作流
   pull_request:
-    types: [ closed ]  # PR 状态为「关闭」（合并 PR 会触发 closed 状态）
-    branches: [ main, master ]  # 目标合并分支（可根据你的仓库分支名修改）
-    # 可选：仅当 PR 被「合并」而非「关闭未合并」时触发（更精准）
-    paths-ignore: # 忽略无代码变更的文件（如 README、LICENSE），避免不必要的触发
+    types: [ closed ]
+    branches: [ main, master ]
+    paths-ignore:
       - '**.md'
       - 'LICENSE'
       - '.gitignore'
-      - '*.yml'
-  push:
-    branches: [ test-github-actions-mvn ]
 
-
-# 工作流任务定义
 jobs:
-  # 单个任务：运行 Maven 测试
   maven-test:
-    # 任务运行的虚拟机环境（GitHub 提供的官方镜像，可选 ubuntu-latest、windows-latest 等）
     runs-on: ubuntu-latest
-
-    # 仅当 PR 被成功合并时才执行（过滤掉「关闭但未合并」的情况）
     if: github.event.pull_request.merged == true
 
-    # 任务步骤（按顺序执行）
     steps:
-      # 步骤 1：检出当前仓库代码（必须步骤，否则无法访问项目文件）
       - name: Checkout repository code
-        uses: actions/checkout@v4  # 使用官方的 checkout 动作，v4 为稳定版
+        uses: actions/checkout@v4
 
-      # 步骤 2：配置 Java 环境（Maven 依赖 Java，必须步骤）
       - name: Set up JDK
-        uses: actions/setup-java@v4  # 官方 Java 配置动作
+        uses: actions/setup-java@v4
         with:
-          java-version: '21'  # 指定 Java 版本（根据你的项目需求修改，如 8、11、21）
-          distribution: 'temurin'  # Java 发行版（temurin 为 Adoptium 提供，稳定可靠）
-          cache: 'maven'  # 启用 Maven 依赖缓存，加速后续构建（避免重复下载依赖）
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
 
-      # 步骤 3：运行 mvn test 执行单元测试
+      # 步骤 3：运行 mvn test，生成详细测试报告（无论成功/失败都执行）
       - name: Run Maven test
-        run: mvn test  # 核心命令：执行 Maven 测试生命周期
-        # 可选：如果项目使用自定义 settings.xml，可添加参数：mvn test -s settings.xml
+        run: |
+          # 1. 执行 mvn test，同时生成 HTML 测试报告（使用 surefire 插件）
+          # 2. -B 批处理模式，-fae 失败后继续执行（捕获所有测试错误）
+          # 3. 重定向命令输出到日志文件，留存完整执行记录
+          mvn clean test -B -fae surefire-report:report > maven-test-execution.log 2>&1
         env:
-          # 可选：配置 Maven 环境变量（如私服地址、凭证等）
-          MAVEN_OPTS: '-Xmx2048m'  # 调整 JVM 堆内存，避免大项目测试内存溢出
+          MAVEN_OPTS: '-Xmx2048m'
+
+      # 步骤 4：上传测试产物（关键步骤：保存失败信息）
+      - name: Upload test artifacts (reports & logs)
+        uses: actions/upload-artifact@v4  # 官方上传产物动作，v4 稳定版
+        with:
+          # 产物名称，在 GitHub 页面显示
+          name: maven-test-results-${{ github.run_id }}
+          # 要上传的文件/目录（涵盖所有关键信息）
+          path: |
+            # 1. Maven 生成的 XML/HTML 测试报告（surefire 插件默认输出目录）
+            target/surefire-reports/
+            # 2. 完整的 mvn 命令执行日志（包含编译、测试、错误详情）
+            maven-test-execution.log
+            # 3. 可选：编译后的产物（如需排查编译问题）
+            target/classes/
+            # 4. 可选：测试代码编译产物
+            target/test-classes/
+          # 核心配置：无论前面步骤是否失败，都执行该上传步骤
+          if: always()
