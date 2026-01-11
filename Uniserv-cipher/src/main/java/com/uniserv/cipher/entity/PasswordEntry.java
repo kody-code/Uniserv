@@ -1,14 +1,13 @@
 package com.uniserv.cipher.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * <p>
@@ -28,8 +27,8 @@ public class PasswordEntry {
     /**
      * 密码条目 ID
      */
-    @TableId("id")
-    private Object id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private UUID id;
 
     /**
      * 网站 APP
@@ -65,13 +64,14 @@ public class PasswordEntry {
      * 逻辑删除
      */
     @TableField("deleted")
+    @TableLogic(value = "false", delval = "true")
     private Boolean deleted;
 
     /**
      * 用户 id
      */
     @TableField("user_id")
-    private Object userId;
+    private UUID userId;
 
     /**
      * 备注

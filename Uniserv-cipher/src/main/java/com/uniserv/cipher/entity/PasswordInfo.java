@@ -1,9 +1,6 @@
 package com.uniserv.cipher.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,14 +38,14 @@ public class PasswordInfo {
     /**
      * 主密码
      */
-    @TableField("master_password_hash")
-    private String masterPasswordHash;
+    @TableField("master_verify_hash")
+    private String masterVerifyHash;
 
     /**
      * 盐值
      */
-    @TableField("salt")
-    private String salt;
+    @TableField("verify_salt")
+    private String verifySalt;
 
     /**
      * 版本
@@ -72,5 +69,6 @@ public class PasswordInfo {
      * 逻辑删除
      */
     @TableField("deleted")
+    @TableLogic(value = "false", delval = "true")
     private Boolean deleted;
 }

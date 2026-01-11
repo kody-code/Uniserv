@@ -30,6 +30,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasswordInfoServiceImpl extends ServiceImpl<PasswordInfoMapper, PasswordInfo> implements IPasswordInfoService {
 
+    /**
+     * 密码加密工具
+     */
     private final PasswordEncryptUtil encryptUtil;
 
     /**
@@ -73,8 +76,8 @@ public class PasswordInfoServiceImpl extends ServiceImpl<PasswordInfoMapper, Pas
             // 创建密码信息
             PasswordInfo passwordInfo = new PasswordInfo();
             passwordInfo.setUserId(UUID.fromString(userId))
-                    .setMasterPasswordHash(verifyHash)
-                    .setSalt(verifySalt);
+                    .setMasterVerifyHash(verifyHash)
+                    .setVerifySalt(verifySalt);
             // 保存密码信息
             return save(passwordInfo);
         } else {
@@ -106,7 +109,7 @@ public class PasswordInfoServiceImpl extends ServiceImpl<PasswordInfoMapper, Pas
             // 获取密码信息
             PasswordInfo info = getOne(new LambdaQueryWrapper<PasswordInfo>().eq(PasswordInfo::getUserId, UUID.fromString(userId)));
             // 验证主密码
-            return encryptUtil.verifyMasterPassword(requestDto.getMasterPassword(), info.getMasterPasswordHash(), info.getSalt());
+            return encryptUtil.verifyMasterPassword(requestDto.getMasterPassword(), info.getMasterVerifyHash(), info.getVerifySalt());
         } else {
             throw new BusinessException(ResultCode.SYSTEM_ERROR.getCode(), "密码信息不存在");
         }
@@ -135,8 +138,8 @@ public class PasswordInfoServiceImpl extends ServiceImpl<PasswordInfoMapper, Pas
             String userId = StpUtil.getLoginIdAsString();
 
             PasswordInfo info = getOne(new LambdaQueryWrapper<PasswordInfo>().eq(PasswordInfo::getUserId, UUID.fromString(userId)));
-            info.setSalt(verifySalt)
-                    .setMasterPasswordHash(verifyHash)
+            info.setVerifySalt(verifySalt)
+                    .setMasterVerifyHash(verifyHash)
                     .setVersion(info.getVersion() + 1)
                     .setUpdatedAt(LocalDateTime.now());
 
