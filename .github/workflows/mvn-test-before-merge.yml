@@ -4,7 +4,7 @@ name: Run Maven Test Before Merge and Save Output
 # 触发条件：针对核心分支的PR创建、同步、重新打开
 on:
   pull_request:
-    branches: [ "main", "master" ] # 按需修改你的核心分支
+    branches: [ "main", "master", "dev" ] # 按需修改你的核心分支
     types: [ opened, synchronize, reopened ]
 
 # 工作流权限配置（满足Artifacts上传和代码拉取需求）
