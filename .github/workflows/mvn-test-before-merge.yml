@@ -1,0 +1,56 @@
+# 工作流名称，可在GitHub Actions页面直观看到
+name: Run Maven Test Before Merge and Save Output
+
+# 触发条件：针对主分支（可修改为你的核心分支，如main/master/dev）的PR创建、同步、更新
+# 确保合并前必触发，阻止未通过测试的PR合并
+on:
+  pull_request:
+    branches: [ "main", "master", "dev" ] # 按需修改你的核心分支
+    types: [ opened, synchronize, reopened ] # PR相关触发场景
+
+# 工作流权限配置（简化Artifacts上传权限）
+permissions:
+  contents: read # 读取仓库内容权限（运行mvn test必需）
+  actions: write # 上传Artifacts必需权限
+
+# 工作任务定义
+jobs:
+  maven-test:
+    # 运行环境：选择官方Ubuntu镜像（内置Java/Maven环境，可按需切换版本）
+    runs-on: ubuntu-latest
+
+    steps:
+      # 步骤1：拉取当前PR的代码到运行环境
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # 步骤2：配置Java环境（Maven运行依赖，按需指定Java版本，如8/11/17）
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin' # 推荐的OpenJDK发行版
+          cache: maven # 缓存Maven依赖，加速后续运行
+
+      # 步骤3：运行mvn test并捕获完整输出到文件
+      - name: Run Maven test and save output
+        run: |
+          # 执行mvn test，将标准输出(stdout)和标准错误(stderr)都重定向到test-output.log
+          # -B：批处理模式，减少冗余输出；-V：显示Maven版本信息，便于排查环境问题
+          mvn -B -V test > test-output.log 2>&1
+          # 可选：打印最后几行输出到Workflow日志，方便快速预览结果
+          echo "===== Maven Test Output Preview ====="
+          tail -n 50 test-output.log
+        # 注意：如果mvn test执行失败（测试用例不通过/编译失败），该步骤会标记为失败
+        # 后续步骤默认不会执行，若需强制保存失败日志，可添加 continue-on-error: true
+
+      # 步骤4：上传测试输出文件作为Artifacts（核心：保存输出信息）
+      - name: Upload Maven test output artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Artifact名称，可自定义，便于识别
+          name: maven-test-output-${{ github.run_id }}
+          # 要上传的文件路径（对应步骤3中生成的日志文件）
+          path: test-output.log
+          # 可选：设置Artifacts保留时间（默认90天，可按需修改，单位：天）
+          retention-days: 7
