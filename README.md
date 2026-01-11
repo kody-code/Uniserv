@@ -19,6 +19,8 @@ Uniserv 是一个功能全面的个人服务后端系统，采用现代化的技
 - **[Uniserv-auth](Uniserv-auth/README.md)** - 认证与授权模块
 - **[Uniserv-common](Uniserv-common/README.md)** - 通用组件模块
 - **[Uniserv-cipher](Uniserv-cipher/README.md)** - 密码管理模块
+- **[Uniserv-ledger](Uniserv-ledger/README.md)** - 账本管理模块
+- **[Uniserv-recipe](Uniserv-recipe/README.md)** - 食谱管理模块
 - **[Uniserv-generator](Uniserv-generator/README.md)** - 代码生成模块
 
 ## 📄 许可证
