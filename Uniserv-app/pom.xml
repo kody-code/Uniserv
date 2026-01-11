@@ -29,6 +29,18 @@
             <artifactId>Uniserv-cipher</artifactId>
             <version>0.0.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.uniserv</groupId>
+            <artifactId>Uniserv-ledger</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.uniserv</groupId>
+            <artifactId>Uniserv-recipe</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
 </project>

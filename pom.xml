@@ -16,6 +16,8 @@
         <module>Uniserv-generator</module>
         <module>Uniserv-auth</module>
         <module>Uniserv-cipher</module>
+        <module>Uniserv-ledger</module>
+        <module>Uniserv-recipe</module>
     </modules>
 
     <parent>
