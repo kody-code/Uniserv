@@ -18,7 +18,10 @@ import org.springframework.context.annotation.ComponentScan;
 @Slf4j
 @SpringBootApplication
 @MapperScan("com.uniserv.**.mapper")
-@ComponentScan(basePackages = {"com.uniserv.common", "com.uniserv.auth"})
+@ComponentScan(basePackages = {
+        "com.uniserv.common", "com.uniserv.auth", "com.uniserv.cipher",
+        "com.uniserv.ledger", "com.uniserv.recipes"
+})
 public class UniservApplication {
     static void main(String[] args) {
         SpringApplication.run(UniservApplication.class, args);

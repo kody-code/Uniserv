@@ -24,6 +24,24 @@
             <artifactId>Uniserv-auth</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.uniserv</groupId>
+            <artifactId>Uniserv-cipher</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.uniserv</groupId>
+            <artifactId>Uniserv-ledger</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.uniserv</groupId>
+            <artifactId>Uniserv-recipes</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 
