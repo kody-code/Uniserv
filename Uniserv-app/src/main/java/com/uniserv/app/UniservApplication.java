@@ -4,6 +4,7 @@ import cn.dev33.satoken.SaManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * <p>
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @Slf4j
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.uniserv.common"})
 public class UniservApplication {
     static void main(String[] args) {
         SpringApplication.run(UniservApplication.class, args);
