@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 修复：用 class 替代 deprecated 的 converterClass 属性 -->
+    <conversionRule conversionWord="clr" class="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <!-- 定义日志常量 -->
+    <property name="LOG_CHARSET" value="UTF-8"/>
+    <property name="LOG_BASE_DIR" value="${LOG_PATH:-${user.dir}/logs}"/>
+    <property name="LOG_FILE_NAME" value="uniserv"/>
+    <!-- 彩色日志格式（Spring Boot 预设颜色映射） -->
+    <property name="COLOR_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+
+    <!-- 1. 控制台输出（带彩色） -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>${LOG_CHARSET}</charset>
+            <pattern>${COLOR_LOG_PATTERN}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- 2. 所有日志文件输出（按时间+大小分割） -->
+    <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_BASE_DIR}/${LOG_FILE_NAME}.log</file>
+        <encoder>
+            <charset>${LOG_CHARSET}</charset>
+            <!-- 文件日志用普通格式，避免颜色控制符 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_BASE_DIR}/history/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+    <!-- 3. 错误日志单独输出（按时间+大小分割） -->
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_BASE_DIR}/${LOG_FILE_NAME}-error.log</file>
+        <encoder>
+            <charset>${LOG_CHARSET}</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_BASE_DIR}/history/${LOG_FILE_NAME}-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 4. 包级别日志控制 -->
+    <logger name="com.uniserv" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE_ALL"/>
+        <appender-ref ref="FILE_ERROR"/>
+    </logger>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.apache.ibatis" level="INFO"/>
+    <logger name="com.alibaba" level="INFO"/>
+
+    <!-- 根日志配置 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE_ALL"/>
+        <appender-ref ref="FILE_ERROR"/>
+    </root>
+</configuration>

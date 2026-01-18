@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: Uniserv
+  profiles:
+    active: dev
+
+sa-token:
+  token-name: uniserv-token
+  timeout: 2592000
+  is-concurrent: true
+  is-share: false
+  token-style: uuid
+  is-log: true
+  active-timeout: 604800
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-handlers-package: com.uniserv.common.handler
+
+encrypt:
+  pbkdf2:
+    iterations: 65536
+    key-length: 256
+    salt-length: 16
