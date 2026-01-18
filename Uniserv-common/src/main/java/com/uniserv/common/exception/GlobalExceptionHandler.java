@@ -18,6 +18,7 @@ import java.util.Set;
 
 /**
  * <p>
+ * 全局异常处理
  * </p>
  *
  * @author kody

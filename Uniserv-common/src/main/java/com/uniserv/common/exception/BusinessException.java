@@ -5,6 +5,7 @@ import lombok.Getter;
 
 /**
  * <p>
+ * 业务异常
  * </p>
  *
  * @author kody
