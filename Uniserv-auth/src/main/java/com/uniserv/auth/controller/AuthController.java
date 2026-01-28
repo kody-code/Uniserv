@@ -5,13 +5,15 @@ import com.uniserv.auth.dto.request.RegisterRequestDto;
 import com.uniserv.auth.dto.response.LoginResponseDto;
 import com.uniserv.auth.dto.response.RegisterResponseDto;
 import com.uniserv.auth.service.ISysUsersService;
-import com.uniserv.common.enums.ResultCode;
 import com.uniserv.common.utils.ResultUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -57,12 +59,10 @@ public class AuthController {
         return ResultUtils.success(usersService.register(registerRequestDto));
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     @Operation(summary = "用户登出", description = "用户登出接口")
     public ResultUtils<Void> logout() {
-        if (usersService.logout()) {
-            return ResultUtils.success();
-        }
-        return ResultUtils.error(ResultCode.AUTH_ERROR.getCode(), "登出失败");
+        usersService.logout();
+        return ResultUtils.success();
     }
 }

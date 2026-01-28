@@ -7,44 +7,49 @@
     <conversionRule conversionWord="wEx"
                     class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
 
-    <!-- 定义日志常量 -->
+    <!-- 通用常量定义 -->
     <property name="LOG_CHARSET" value="UTF-8"/>
     <property name="LOG_BASE_DIR" value="${LOG_PATH:-${user.dir}/logs}"/>
     <property name="LOG_FILE_NAME" value="uniserv"/>
 
-    <!-- 根据环境设置不同的日期格式 -->
-    <springProfile name="!dev">
-        <!-- 生产环境：显示完整日期 -->
-        <property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss.SSS"/>
-        <property name="COLOR_LOG_PATTERN"
-                  value="%clr(%d{${DATE_FORMAT}}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
-    </springProfile>
-
+    <!-- ========== 环境差异化日志格式 ========== -->
+    <!-- 开发环境：精简格式（无日期、无PID，仅保留时分秒+TraceId+核心信息） -->
     <springProfile name="dev">
-        <!-- 开发环境：只显示时间 -->
-        <property name="DATE_FORMAT" value="HH:mm:ss.SSS"/>
         <property name="COLOR_LOG_PATTERN"
-                  value="%clr(%d{${DATE_FORMAT}}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+                  value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr([%X{traceId}]){yellow} %clr(:){faint} %m%n%wEx"/>
+        <!-- 开发环境文件日志也精简（无日期） -->
+        <property name="FILE_LOG_PATTERN"
+                  value="%d{HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}] %logger{50} - %msg%n"/>
     </springProfile>
 
-    <!-- 1. 控制台输出（带彩色） -->
+    <!-- 生产环境：完整格式（保留日期、PID、所有信息） -->
+    <springProfile name="prod">
+        <property name="COLOR_LOG_PATTERN"
+                  value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr([%X{traceId}]){yellow} %clr(:){faint} %m%n%wEx"/>
+        <!-- 生产环境文件日志完整格式 -->
+        <property name="FILE_LOG_PATTERN"
+                  value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}] %logger{50} - %msg%n"/>
+    </springProfile>
+
+    <!-- ========== 通用 Appender 配置 ========== -->
+    <!-- 1. 控制台输出（带彩色，自动适配环境格式） -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>${LOG_CHARSET}</charset>
             <pattern>${COLOR_LOG_PATTERN}</pattern>
         </encoder>
+        <!-- 开发环境控制台只输出INFO及以上，生产环境保持一致（可按需调整） -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
     </appender>
 
-    <!-- 2. 所有日志文件输出（按时间+大小分割） -->
+    <!-- 2. 所有日志文件输出（按时间+大小分割，适配环境格式） -->
     <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_BASE_DIR}/${LOG_FILE_NAME}.log</file>
         <encoder>
             <charset>${LOG_CHARSET}</charset>
-            <!-- 文件日志用普通格式，避免颜色控制符 -->
-            <pattern>%d{${DATE_FORMAT}} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_BASE_DIR}/history/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -58,12 +63,12 @@
         </filter>
     </appender>
 
-    <!-- 3. 错误日志单独输出（按时间+大小分割） -->
+    <!-- 3. 错误日志单独输出（按时间+大小分割，适配环境格式） -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_BASE_DIR}/${LOG_FILE_NAME}-error.log</file>
         <encoder>
             <charset>${LOG_CHARSET}</charset>
-            <pattern>%d{${DATE_FORMAT}} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_BASE_DIR}/history/${LOG_FILE_NAME}-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -78,7 +83,7 @@
         </filter>
     </appender>
 
-    <!-- 4. 包级别日志控制 -->
+    <!-- ========== 包级别日志控制（通用） ========== -->
     <logger name="com.uniserv" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE_ALL"/>
