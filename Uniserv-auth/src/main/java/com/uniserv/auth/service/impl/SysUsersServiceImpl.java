@@ -103,14 +103,13 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
         }
 
         // 查询用户信息
-        SysUsers userName = getOne(new LambdaQueryWrapper<SysUsers>()
-                .eq(SysUsers::getUsername, registerRequestDto.getUsername()));
-
-        SysUsers email = getOne(new LambdaQueryWrapper<SysUsers>()
+        SysUsers userInfo = getOne(new LambdaQueryWrapper<SysUsers>()
+                .eq(SysUsers::getUsername, registerRequestDto.getUsername())
+                .or()
                 .eq(SysUsers::getEmail, registerRequestDto.getEmail()));
 
         // 用户已存在
-        if (userName != null || email != null) {
+        if (userInfo != null) {
             throw new BusinessException(ResultCode.BUSINESS_ERROR.getCode(), "用户已存在");
         }
 
