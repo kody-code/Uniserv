@@ -11,9 +11,21 @@
     <property name="LOG_CHARSET" value="UTF-8"/>
     <property name="LOG_BASE_DIR" value="${LOG_PATH:-${user.dir}/logs}"/>
     <property name="LOG_FILE_NAME" value="uniserv"/>
-    <!-- 彩色日志格式（Spring Boot 预设颜色映射） -->
-    <property name="COLOR_LOG_PATTERN"
-              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+
+    <!-- 根据环境设置不同的日期格式 -->
+    <springProfile name="!dev">
+        <!-- 生产环境：显示完整日期 -->
+        <property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss.SSS"/>
+        <property name="COLOR_LOG_PATTERN"
+                  value="%clr(%d{${DATE_FORMAT}}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+    </springProfile>
+
+    <springProfile name="dev">
+        <!-- 开发环境：只显示时间 -->
+        <property name="DATE_FORMAT" value="HH:mm:ss.SSS"/>
+        <property name="COLOR_LOG_PATTERN"
+                  value="%clr(%d{${DATE_FORMAT}}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+    </springProfile>
 
     <!-- 1. 控制台输出（带彩色） -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -32,7 +44,7 @@
         <encoder>
             <charset>${LOG_CHARSET}</charset>
             <!-- 文件日志用普通格式，避免颜色控制符 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <pattern>%d{${DATE_FORMAT}} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_BASE_DIR}/history/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -51,7 +63,7 @@
         <file>${LOG_BASE_DIR}/${LOG_FILE_NAME}-error.log</file>
         <encoder>
             <charset>${LOG_CHARSET}</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <pattern>%d{${DATE_FORMAT}} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_BASE_DIR}/history/${LOG_FILE_NAME}-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
