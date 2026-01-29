@@ -13,6 +13,7 @@ import com.uniserv.auth.entity.SysUsers;
 import com.uniserv.auth.enums.SysUserRoles;
 import com.uniserv.auth.mapper.SysUsersMapper;
 import com.uniserv.auth.service.ISysUsersService;
+import com.uniserv.auth.utils.EmailValidator;
 import com.uniserv.common.enums.ResultCode;
 import com.uniserv.common.exception.BusinessException;
 import com.uniserv.common.utils.BCryptPasswordUtils;
@@ -51,21 +52,33 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
             throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "账号和密码不可为空");
         }
 
-        String username = loginRequestDto.getUsername();
-        log.debug("[{}] 登录请求，用户名：{}", MDC.get("traceId"), username);
+        String account = loginRequestDto.getAccount();
+        log.debug("[{}] 登录请求，账号：{}", MDC.get("traceId"), account);
+        if (EmailValidator.isValidEmailWithNullCheck(account)) {
+            SysUsers userInfo = baseMapper.selectOne(new LambdaQueryWrapper<SysUsers>()
+                    .eq(SysUsers::getEmail, loginRequestDto.getAccount()));
+            if (userInfo == null) {
+                log.error("[{}] 登录失败，邮箱：{}，原因：{}", MDC.get("traceId"), account, "用户不存在");
+                throw new BusinessException(ResultCode.AUTH_ERROR.getCode(), "用户不存在");
+            }
 
+            log.debug("[{}] 登录请求，邮箱：{}", MDC.get("traceId"), account);
+        }
         // 查询用户信息
         SysUsers userInfo = baseMapper.selectOne(new LambdaQueryWrapper<SysUsers>()
-                .eq(SysUsers::getUsername, loginRequestDto.getUsername())
-        );
+                .eq(SysUsers::getUsername, loginRequestDto.getAccount()));
+
         if (userInfo == null) {
-            log.error("[{}] 登录失败，用户名：{}，原因：{}", MDC.get("traceId"), username, "用户不存在");
+            log.error("[{}] 登录失败，用户名：{}，原因：{}", MDC.get("traceId"), account, "用户不存在");
             throw new BusinessException(ResultCode.AUTH_ERROR.getCode(), "用户不存在");
         }
 
+        log.debug("[{}] 登录请求，用户名：{}", MDC.get("traceId"), account);
+
         // 密码校验
-        if (!BCryptPasswordUtils.verify(Objects.requireNonNull(loginRequestDto.getPassword()), userInfo.getPasswordHash())) {
-            log.warn("[{}] 登录失败，用户名：{}，原因：{}", MDC.get("traceId"), username, "账户或密码错误");
+        if (!BCryptPasswordUtils.verify(Objects.requireNonNull(loginRequestDto.getPassword()),
+                userInfo.getPasswordHash())) {
+            log.warn("[{}] 登录失败，用户名：{}，原因：{}", MDC.get("traceId"), account, "账户或密码错误");
             throw new BusinessException(ResultCode.AUTH_ERROR.getCode(), "账户或密码错误");
         }
 
@@ -76,8 +89,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
         UUID userId = userInfo.getUserId();
         StpUtil.login(userId.toString());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        log.info("[{}] 登录成功，用户ID：{}，用户名：{}，Token：{}",
-                MDC.get("traceId"), userId, username, tokenInfo.getTokenValue().substring(0, 8) + "****");
+        log.info("[{}] 登录成功，用户ID：{}，账号：{}，Token：{}",
+                MDC.get("traceId"), userId, account, tokenInfo.getTokenValue().substring(0, 8) + "****");
         return new LoginResponseDto()
                 .setUserId(userId)
                 .setUsername(userInfo.getUsername())
@@ -119,7 +132,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
 
         // 用户已存在
         if (userInfo != null) {
-            log.error("[{}] 用户已存在，用户名：{}，邮箱：{}", MDC.get("traceId"), registerRequestDto.getUsername(), registerRequestDto.getEmail());
+            log.error("[{}] 用户已存在，用户名：{}，邮箱：{}", MDC.get("traceId"), registerRequestDto.getUsername(),
+                    registerRequestDto.getEmail());
             throw new BusinessException(ResultCode.BUSINESS_ERROR.getCode(), "用户已存在");
         }
 
@@ -140,11 +154,13 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
                         .setUsername(users.getUsername())
                         .setEmail(users.getEmail());
             } else {
-                log.error("[{}] 注册失败，用户名：{}，邮箱：{}，原因：数据库保存失败", MDC.get("traceId"), users.getUsername(), users.getEmail());
+                log.error("[{}] 注册失败，用户名：{}，邮箱：{}，原因：数据库保存失败", MDC.get("traceId"), users.getUsername(),
+                        users.getEmail());
                 throw new BusinessException(ResultCode.BUSINESS_ERROR.getCode(), "用户注册失败");
             }
         } catch (Exception e) {
-            log.error("[{}] 注册异常，用户名：{}，邮箱：{}", MDC.get("traceId"), registerRequestDto.getUsername(), registerRequestDto.getEmail(), e);
+            log.error("[{}] 注册异常，用户名：{}，邮箱：{}", MDC.get("traceId"), registerRequestDto.getUsername(),
+                    registerRequestDto.getEmail(), e);
             throw new BusinessException(ResultCode.BUSINESS_ERROR.getCode(), "用户注册失败");
         }
     }
@@ -178,7 +194,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
             throw new BusinessException(ResultCode.BUSINESS_ERROR.getCode(), "查询角色列表失败");
         }
     }
-
 
     /**
      * 登出

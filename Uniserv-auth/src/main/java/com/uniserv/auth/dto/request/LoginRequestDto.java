@@ -1,5 +1,8 @@
 package com.uniserv.auth.dto.request;
 
+import com.uniserv.auth.constant.ValidateConstant;
+
+import io.micrometer.core.instrument.config.validate.Validated.Valid;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -21,14 +24,14 @@ public class LoginRequestDto {
     /**
      * 用户名
      */
-    @NotBlank(message = "用户名不能为空")
-    @Schema(description = "用户名", example = "admin")
-    private String username;
+    @NotBlank(message = ValidateConstant.USER_NAME_NOT_NULL)
+    @Schema(description = "账号", example = "admin/admin@example.com")
+    private String account;
 
     /**
      * 密码
      */
-    @NotBlank(message = "密码不能为空")
+    @NotBlank(message = ValidateConstant.PASSWORD_NOT_NULL)
     @Schema(description = "密码", example = "123456")
     private String password;
 }

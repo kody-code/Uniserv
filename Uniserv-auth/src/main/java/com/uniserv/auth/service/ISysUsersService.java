@@ -55,6 +55,6 @@ public interface ISysUsersService extends IService<SysUsers> {
      *
      * @return 登出结果
      */
-    boolean logout();
+    void logout();
 
 }
