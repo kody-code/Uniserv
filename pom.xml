@@ -18,6 +18,7 @@
     <modules>
         <module>Uniserv-app</module>
         <module>Uniserv-common</module>
+        <module>Uniserv-generator</module>
     </modules>
 
     <properties>

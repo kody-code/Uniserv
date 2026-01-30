@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 /**
  * <p>
+ * 启动类
  * </p>
  *
  * @author kody
