@@ -2,6 +2,7 @@ package com.uniserv.generator;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
+import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.Scanner;
  */
 public class CodeGenerator {
     private static final String JAVA_OUTPUT_DIR = "/src/main/java";
+    private static final String XML_OUTPUT_DIR = "/src/main/resources/mapper";
 
     private static final String URL = System.getenv("DB_URL");
     private static final String USERNAME = System.getenv("DB_USER");
@@ -55,6 +57,7 @@ public class CodeGenerator {
                         .service("service")
                         .serviceImpl("service.impl")
                         .xml("mapper.xml")
+                        .pathInfo(Collections.singletonMap(OutputFile.xml, path + XML_OUTPUT_DIR))
                 )
                 .strategyConfig((scanner, builder) -> builder
                         .addInclude(getTables(scanner.apply("请输入表名，多个英文逗号分隔？所有输入 all")))

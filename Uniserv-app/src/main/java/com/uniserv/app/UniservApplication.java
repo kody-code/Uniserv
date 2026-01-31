@@ -2,6 +2,7 @@ package com.uniserv.app;
 
 import cn.dev33.satoken.SaManager;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 @Slf4j
 @SpringBootApplication
 @ComponentScan("com.uniserv")
+@MapperScan("com.uniserv.**.mapper")
 public class UniservApplication {
     static void main(String[] args) {
         SpringApplication.run(UniservApplication.class, args);

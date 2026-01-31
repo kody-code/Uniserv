@@ -19,6 +19,7 @@
         <module>Uniserv-app</module>
         <module>Uniserv-common</module>
         <module>Uniserv-generator</module>
+        <module>Uniserv-auth</module>
     </modules>
 
     <properties>
@@ -49,6 +50,13 @@
                 <groupId>com.uniserv</groupId>
                 <artifactId>Uniserv-common</artifactId>
                 <version>${unserv-common.version}</version>
+            </dependency>
+
+            <!-- auth -->
+            <dependency>
+                <groupId>com.uniserv</groupId>
+                <artifactId>Uniserv-auth</artifactId>
+                <version>${unserv-auth.version}</version>
             </dependency>
 
             <!-- mybatis-plus-generator -->

@@ -9,17 +9,13 @@
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>Uniserv-app</artifactId>
+    <artifactId>Uniserv-auth</artifactId>
+    <version>1.0.0</version>
 
     <dependencies>
         <dependency>
             <groupId>com.uniserv</groupId>
             <artifactId>Uniserv-common</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.uniserv</groupId>
-            <artifactId>Uniserv-auth</artifactId>
         </dependency>
     </dependencies>
 </project>
