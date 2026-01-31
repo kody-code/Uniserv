@@ -39,13 +39,13 @@ public class LedgerAccountRecords extends Model<LedgerAccountRecords> {
     /**
      * 所属账户ID，关联ledger_account表account_id字段，不可为NULL
      */
-    @TableId(value = "account_id", type = IdType.AUTO)
+    @TableField(value = "account_id")
     private UUID accountId;
 
     /**
      * 所属账本ID，关联ledger_books表book_id字段，冗余存储提升查询效率，不可为NULL
      */
-    @TableId(value = "book_id", type = IdType.AUTO)
+    @TableField(value = "book_id")
     private UUID bookId;
 
     /**
@@ -57,13 +57,13 @@ public class LedgerAccountRecords extends Model<LedgerAccountRecords> {
     /**
      * 交易类型，枚举类型：INCOME(收入)、EXPENSE(支出)、TRANSFER(转账)，不可为NULL
      */
-    @TableId(value = "record_type", type = IdType.AUTO)
+    @TableField(value = "record_type")
     private String recordType;
 
     /**
      * 关联收支类型表的ID，不可为NULL
      */
-    @TableId(value = "type_id", type = IdType.AUTO)
+    @TableField(value = "type_id")
     private UUID typeId;
 
     /**
@@ -81,7 +81,7 @@ public class LedgerAccountRecords extends Model<LedgerAccountRecords> {
     /**
      * 交易发生时间，可自定义（如补录历史交易），带时区，用于分区表拆分，不可为NULL
      */
-    @TableId(value = "occurred_at", type = IdType.AUTO)
+    @TableField(value = "occurred_at")
     private LocalDateTime occurredAt;
 
     /**
@@ -99,13 +99,13 @@ public class LedgerAccountRecords extends Model<LedgerAccountRecords> {
     /**
      * 软删除标记，true=已删除，false=正常使用，默认false
      */
-    @TableId(value = "deleted", type = IdType.AUTO)
+    @TableField(value = "deleted")
     private Boolean deleted;
 
     /**
      * 软删除时间，仅当deleted=true时有值，带时区，通过触发器自动设置
      */
-    @TableId(value = "deleted_at", type = IdType.AUTO)
+    @TableField(value = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Override
