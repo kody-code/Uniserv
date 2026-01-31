@@ -3,7 +3,11 @@ package com.uniserv.generator;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
+import com.baomidou.mybatisplus.generator.config.converts.PostgreSqlTypeConvert;
+import com.baomidou.mybatisplus.generator.config.querys.PostgreSqlQuery;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.baomidou.mybatisplus.generator.keywords.PostgreSqlKeyWordsHandler;
+import com.baomidou.mybatisplus.generator.query.SQLQuery;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +49,13 @@ public class CodeGenerator {
 
 
         FastAutoGenerator.create(URL, USERNAME, PASSWORD)
+                .dataSourceConfig(builder -> builder
+                        .dbQuery(new PostgreSqlQuery())
+                        .schema("public")
+                        .typeConvert(new PostgreSqlTypeConvert())
+                        .keyWordsHandler(new PostgreSqlKeyWordsHandler())
+                        .databaseQueryClass(SQLQuery.class)
+                )
                 .globalConfig(builder -> builder
                         .author("kody")
                         .outputDir(path + JAVA_OUTPUT_DIR)
