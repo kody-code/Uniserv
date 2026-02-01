@@ -1,0 +1,5 @@
+encrypt:
+  pbkdf2:
+    iterations: 65536
+    key-length: 256
+    salt-length: 16

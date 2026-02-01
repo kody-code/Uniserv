@@ -17,6 +17,22 @@
             <groupId>com.uniserv</groupId>
             <artifactId>Uniserv-common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.warrenstrange</groupId>
+            <artifactId>googleauth</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>
