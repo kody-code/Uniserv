@@ -20,6 +20,8 @@
         <module>Uniserv-common</module>
         <module>Uniserv-generator</module>
         <module>Uniserv-auth</module>
+        <module>Uniserv-cipher</module>
+        <module>Uniserv-ledger</module>
     </modules>
 
     <properties>
@@ -41,6 +43,8 @@
 
         <unserv-common.version>1.0.0</unserv-common.version>
         <unserv-auth.version>1.0.0</unserv-auth.version>
+        <unserv-cipher.version>1.0.0</unserv-cipher.version>
+        <unserv-ledger.version>1.0.0</unserv-ledger.version>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +61,19 @@
                 <groupId>com.uniserv</groupId>
                 <artifactId>Uniserv-auth</artifactId>
                 <version>${unserv-auth.version}</version>
+            </dependency>
+
+            <!-- cipher -->
+            <dependency>
+                <groupId>com.uniserv</groupId>
+                <artifactId>Uniserv-cipher</artifactId>
+                <version>${unserv-cipher.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.uniserv</groupId>
+                <artifactId>Uniserv-ledger</artifactId>
+                <version>${unserv-ledger.version}</version>
             </dependency>
 
             <!-- mybatis-plus-generator -->
