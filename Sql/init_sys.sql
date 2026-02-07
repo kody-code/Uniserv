@@ -8,12 +8,7 @@ COMMENT
 -- 用户表
 CREATE TABLE IF NOT EXISTS sys_users
 (
-    user_id
-                  uuid
-                                 DEFAULT
-                                     uuid_generate_v4
-                                     (
-                                     )                          NOT NULL PRIMARY KEY,
+    user_id       uuid           DEFAULT uuid_generate_v4()     NOT NULL PRIMARY KEY,
     username      varchar(20)                                   NOT NULL UNIQUE,
     email         varchar(255)                                  NOT NULL UNIQUE,
     password_hash varchar(255)                                  NOT NULL,

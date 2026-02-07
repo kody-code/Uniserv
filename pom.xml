@@ -20,6 +20,7 @@
         <module>Uniserv-app</module>
         <module>Uniserv-auth</module>
         <module>Uniserv-generator</module>
+        <module>Uniserv-flashnote</module>
     </modules>
 
 
@@ -42,6 +43,7 @@
 
         <uniserv-common.version>0.0.1</uniserv-common.version>
         <uniserv-auth.version>0.0.1</uniserv-auth.version>
+        <uniserv-flashnote.version>0.0.1</uniserv-flashnote.version>
     </properties>
 
     <dependencyManagement>
@@ -56,6 +58,11 @@
                 <groupId>com.kody</groupId>
                 <artifactId>Uniserv-auth</artifactId>
                 <version>${uniserv-auth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kody</groupId>
+                <artifactId>Uniserv-flashnote</artifactId>
+                <version>${uniserv-flashnote.version}</version>
             </dependency>
 
             <!-- swagger -->
