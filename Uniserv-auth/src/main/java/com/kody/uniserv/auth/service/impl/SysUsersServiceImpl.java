@@ -3,12 +3,15 @@ package com.kody.uniserv.auth.service.impl;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kody.uniserv.auth.dto.request.LoginRequestDto;
 import com.kody.uniserv.auth.dto.request.RegisterRequestDto;
+import com.kody.uniserv.auth.dto.request.UserPageRequestDto;
 import com.kody.uniserv.auth.dto.response.LoginResponseDto;
 import com.kody.uniserv.auth.dto.response.RegisterResponseDto;
 import com.kody.uniserv.auth.dto.response.TokenInfo;
+import com.kody.uniserv.auth.dto.response.UserInfoDto;
 import com.kody.uniserv.auth.entity.SysUsers;
 import com.kody.uniserv.auth.enums.SysUserRoles;
 import com.kody.uniserv.auth.mapper.SysUsersMapper;
@@ -19,6 +22,7 @@ import com.kody.uniserv.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -185,5 +189,80 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
             log.error("[{}] 登出异常，用户ID：{}", MDC.get("traceId"), userId, e);
             throw new BusinessException(ResultCode.SERVER_ERROR.getCode(), "登出失败");
         }
+    }
+
+    /**
+     * 分页查询用户列表
+     *
+     * @param page               分页对象
+     * @param userPageRequestDto 查询条件
+     * @return 分页结果
+     */
+    @Override
+    public Page<SysUsers> getUserPage(Page<SysUsers> page, UserPageRequestDto userPageRequestDto) {
+        LambdaQueryWrapper<SysUsers> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 添加查询条件
+        if (userPageRequestDto.getUsername() != null && !userPageRequestDto.getUsername().isEmpty()) {
+            queryWrapper.like(SysUsers::getUsername, userPageRequestDto.getUsername());
+        }
+
+        if (userPageRequestDto.getEmail() != null && !userPageRequestDto.getEmail().isEmpty()) {
+            queryWrapper.like(SysUsers::getEmail, userPageRequestDto.getEmail());
+        }
+
+        if (userPageRequestDto.getRole() != null && !userPageRequestDto.getRole().isEmpty()) {
+            queryWrapper.apply("roles = CAST({0} AS sys_user_roles)", userPageRequestDto.getRole());
+        }
+
+        if (userPageRequestDto.getIsActive() != null) {
+            queryWrapper.eq(SysUsers::getIsActive, userPageRequestDto.getIsActive());
+        }
+
+        // 排除逻辑删除的数据
+        queryWrapper.eq(SysUsers::getDeleted, false);
+
+        // 按创建时间降序排列
+        queryWrapper.orderByDesc(SysUsers::getCreatedAt);
+
+        return page(page, queryWrapper);
+    }
+
+    /**
+     * 分页查询用户列表(DTO方式)
+     *
+     * @param userPageRequestDto 查询条件
+     * @return 分页结果
+     */
+    @Override
+    public Page<UserInfoDto> getUserPage(UserPageRequestDto userPageRequestDto) {
+        // 创建分页对象
+        Page<SysUsers> page = new Page<>(userPageRequestDto.getPageNum(), userPageRequestDto.getPageSize());
+
+        // 执行分页查询
+        Page<SysUsers> userPage = getUserPage(page, userPageRequestDto);
+
+        // 转换为DTO
+        Page<UserInfoDto> dtoPage = new Page<>();
+        BeanUtils.copyProperties(userPage, dtoPage, "records");
+
+        List<UserInfoDto> dtoList = userPage.getRecords().stream()
+                .map(this::convertToUserInfoDto)
+                .toList();
+
+        dtoPage.setRecords(dtoList);
+        return dtoPage;
+    }
+
+    /**
+     * 将SysUsers实体转换为UserInfoDto
+     *
+     * @param sysUsers 用户实体
+     * @return 用户信息DTO
+     */
+    private UserInfoDto convertToUserInfoDto(SysUsers sysUsers) {
+        UserInfoDto dto = new UserInfoDto();
+        BeanUtils.copyProperties(sysUsers, dto);
+        return dto;
     }
 }

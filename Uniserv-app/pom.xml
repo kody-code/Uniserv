@@ -46,10 +46,6 @@
             <groupId>com.kody</groupId>
             <artifactId>Uniserv-auth</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.kody</groupId>
-            <artifactId>Uniserv-admin</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
