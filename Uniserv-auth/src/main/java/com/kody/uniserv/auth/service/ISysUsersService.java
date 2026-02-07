@@ -1,10 +1,13 @@
 package com.kody.uniserv.auth.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kody.uniserv.auth.dto.request.LoginRequestDto;
 import com.kody.uniserv.auth.dto.request.RegisterRequestDto;
+import com.kody.uniserv.auth.dto.request.UserPageRequestDto;
 import com.kody.uniserv.auth.dto.response.LoginResponseDto;
 import com.kody.uniserv.auth.dto.response.RegisterResponseDto;
+import com.kody.uniserv.auth.dto.response.UserInfoDto;
 import com.kody.uniserv.auth.entity.SysUsers;
 
 import java.util.List;
@@ -54,4 +57,21 @@ public interface ISysUsersService extends IService<SysUsers> {
      * 登出
      */
     void logout();
+
+    /**
+     * 分页查询用户列表
+     *
+     * @param page               分页对象
+     * @param userPageRequestDto 查询条件
+     * @return 分页结果
+     */
+    Page<SysUsers> getUserPage(Page<SysUsers> page, UserPageRequestDto userPageRequestDto);
+
+    /**
+     * 分页查询用户列表(DTO方式)
+     *
+     * @param userPageRequestDto 查询条件
+     * @return 分页结果
+     */
+    Page<UserInfoDto> getUserPage(UserPageRequestDto userPageRequestDto);
 }

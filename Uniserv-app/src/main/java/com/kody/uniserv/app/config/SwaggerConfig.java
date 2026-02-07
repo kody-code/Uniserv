@@ -64,6 +64,15 @@ public class SwaggerConfig {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi adminApi() {
+        return GroupedOpenApi.builder()
+                .group("管理员模块")
+                .packagesToScan("com.kody.uniserv.app.controller.admin")
+                .pathsToMatch("/api/admin/**")
+                .build();
+    }
+
     /**
      * 密码模块 API 分组
      * 扫描路径：com.uniserv.cipher.controller，接口路径：/api/cipher/**

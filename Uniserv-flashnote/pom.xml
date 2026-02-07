@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>Uniserv-admin</artifactId>
+    <artifactId>Uniserv-flashnote</artifactId>
     <version>0.0.1</version>
 
     <dependencies>
