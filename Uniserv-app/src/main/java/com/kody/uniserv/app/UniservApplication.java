@@ -2,6 +2,7 @@ package com.kody.uniserv.app;
 
 import cn.dev33.satoken.SaManager;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @Slf4j
 @ComponentScan("com.kody.uniserv")
+@MapperScan("com.kody.uniserv.**.mapper")
 @SpringBootApplication(scanBasePackages = "com.kody.uniserv")
 public class UniservApplication {
     static void main(String[] args) {

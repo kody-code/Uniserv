@@ -26,9 +26,10 @@ public enum ResultCode {
 
     // ====================== AUTH 1000 ======================
     USER_NOT_FOUND(1001, "用户不存在"),
-    PASSWORD_ERROR(1002, "密码错误"),
+    ACCOUNT_PASSWORD_ERROR(1002, "账户或密码错误"),
     USER_DISABLE(1003, "用户被禁用"),
     USER_NOT_AUTHORIZED(1004, "用户未授权"),
+    USER_ALREADY_EXIST(1005, "用户已存在"),
 
     // ====================== ADMIN 2000 ======================
     ROLE_NOT_EXIST(2001, "角色不存在"),
