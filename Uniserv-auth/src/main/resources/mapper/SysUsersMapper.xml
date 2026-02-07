@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kody.uniserv.auth.mapper.SysUsersMapper">
+
+    <update id="updateLastLogin" parameterType="java.util.UUID">
+        UPDATE sys_users
+        SET last_login = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="getRolesList" parameterType="java.util.UUID" resultType="string">
+        SELECT roles
+        FROM sys_users
+        WHERE user_id = #{userId}
+    </select>
+
+    <insert id="saveUser" parameterType="com.kody.uniserv.auth.entity.SysUsers">
+        INSERT INTO sys_users (username, email, password_hash, roles)
+        VALUES (#{username}, #{email}, #{passwordHash}, #{roles}::sys_user_roles)
+    </insert>
+</mapper>

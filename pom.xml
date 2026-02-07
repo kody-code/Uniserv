@@ -20,6 +20,7 @@
         <module>Uniserv-app</module>
         <module>Uniserv-auth</module>
         <module>Uniserv-admin</module>
+        <module>Uniserv-generator</module>
     </modules>
 
 

@@ -59,7 +59,7 @@ public class SwaggerConfig {
     public GroupedOpenApi authApi() {
         return GroupedOpenApi.builder()
                 .group("认证模块")
-                .packagesToScan("com.uniserv.auth.controller")
+                .packagesToScan("com.kody.uniserv.app.controller.auth")
                 .pathsToMatch("/api/auth/**")
                 .build();
     }
