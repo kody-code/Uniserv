@@ -40,7 +40,7 @@ public enum ResultCode {
     // ====================== BOOKKEEPING 4000 ======================
     BOOK_NOT_EXIST(4001, "账单不存在"),
 
-    // ====================== FLASHNOTE 5000 ======================
+    // ====================== FLASH NOTE 5000 ======================
     FLASH_NOTE_NOT_EXIST(5001, "闪记不存在");
 
     private final int code;

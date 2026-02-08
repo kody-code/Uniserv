@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.kody.uniserv.common.handler.ListStringTypeHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -51,7 +52,7 @@ public class FlashNoteRecords extends Model<FlashNoteRecords> {
     /**
      * 标签
      */
-    @TableField("tags")
+    @TableField(value = "tags", typeHandler = ListStringTypeHandler.class)
     private List<String> tags;
 
     /**

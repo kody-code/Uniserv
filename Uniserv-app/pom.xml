@@ -46,6 +46,10 @@
             <groupId>com.kody</groupId>
             <artifactId>Uniserv-auth</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.kody</groupId>
+            <artifactId>Uniserv-flashnote</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
